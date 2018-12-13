@@ -1,0 +1,20 @@
+Jeu 2D Phaser.io orienté arcade
+Multijoueur dans une arène.
+Les joueurs se connectent et entrent dans l'arène.
+Joueur qui gagne grandit ou grossit ou etc.
+Un joueur plus fort peut être attaqué à plusieurs. Le loot est réparti entre les assaillants vainqueurs.
+Mais le jeu doit rester intéressant en 1 contre 1 tout de même. Eventuellement, mettre une IA pour gérer plusieurs blobs. Les joueurs sont distingués graphiquement.
+
+Idée de représentations :
+des entités présentés sous la forme de blobs.
+-agglomération d'autres entités lors des combats
+-plusieurs petits peuvent se coller à la paroi d'un plus gros pour le dévorer à plusieurs (répartition du loot) et croissance des assaillants.
+
+Entité évolue au fil des combats
+-petite entité : guérilla/charognard
+-moyenne entité : attaque organisée/bullying des petites entités
+-grosse entité : défense contre les attaques synchronisées des petites/moyennes entités.
+
+éventuellement, un truc similaire à IODA-LIFL. Capter l'environnement proche. Prendre une décision (dilemme du prisonnier) 
+
+

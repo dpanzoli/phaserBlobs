@@ -1,0 +1,80 @@
+
+<html>
+<meta charset="utf-8">
+<script src="phaser.min.js"></script>
+<script>
+
+var config = {
+    type: Phaser.WEBGL,
+    width: 800,
+    height: 600,
+    backgroundColor: '#000',
+    parent: 'phaser-example',
+    scene: {
+        preload: preload,
+        create: create
+    }
+};
+
+var game = new Phaser.Game(config);
+
+function preload ()
+{
+    this.load.atlas('flares', 'flares.png', 'flares.json');
+}
+
+function create ()
+{
+    var particles = this.add.particles('flares');
+
+	//var container = this.add.container(200, 300);
+
+
+	var emitZone = new Phaser.Geom.Circle(200, 300, 25);
+	//container.add(emitZone);
+	
+	var emitZone_b = new Phaser.Geom.Circle(600, 300, 5);
+	
+	
+    var emitter = particles.createEmitter({
+        //angle: { min: 140, max: 180 },
+		frame:  ['blue'],
+		maxParticles: 40,
+		//frequency: ????
+        speed: 0,
+        gravityY: 0,
+        lifespan: 100,
+        blendMode: 'ADD',
+		emitZone: {source: emitZone}
+    });
+	
+	var emitter_b = particles.createEmitter({
+        //angle: { min: 140, max: 180 },
+		frame:  ['yellow'] ,
+		follow: emitZone,
+		followOffset: {x:100, y:100},
+		maxParticles: 40,
+		scale: 0.2,
+        speed: 0,
+        gravityY: 0,
+        lifespan: 100,
+        blendMode: 'ADD',
+		emitZone: {source: emitZone_b}
+    });
+
+
+	var tween = this.tweens.add({
+        targets: emitZone,
+        x: 600,
+        ease: 'linear',
+        duration: 3000,
+		yoyo: true
+    });
+
+	
+}
+
+
+</script>
+
+</html>
