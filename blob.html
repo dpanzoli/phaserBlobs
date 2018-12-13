@@ -7,7 +7,7 @@
 var config = {
     type: Phaser.WEBGL,
     width: 800,
-    height: 600,
+    height: 800,
     backgroundColor: '#000',
     parent: 'phaser-example',
     scene: {
@@ -17,7 +17,7 @@ var config = {
 	physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: false
         }
     },
 };
@@ -41,43 +41,9 @@ function create ()
 
 	var grosBlob = this.physics.add.image(200,150, 'face');
 	grosBlob.setInteractive();
-	this.input.setDraggable(grosBlob);
 	grosBlob.setSize(60,60, true);
 	grosBlob.setScale(1.5);
-	blobGroup.add(grosBlob);
-	grosBlob.setVelocity(
-		Phaser.Math.Between(0,100),
-		Phaser.Math.Between(0,100),
-	)
-	
-	var moyenBlob = this.physics.add.image(200,300, 'face');
-	moyenBlob.setInteractive();
-	this.input.setDraggable(moyenBlob);
-	moyenBlob.setSize(50,50, true);
-	blobGroup.add(moyenBlob);
-	
-	var petitBlob = this.physics.add.image(200,450, 'face');
-	petitBlob.setInteractive();
-	this.input.setDraggable(petitBlob);
-	petitBlob.setSize(50,50, true);
-	petitBlob.setScale(0.75);
-	blobGroup.add(petitBlob);
-		
-	this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-
-        gameObject.x = dragX;
-        gameObject.y = dragY;
-
-    });
-
-	
-	 this.physics.add.collider(blobGroup, blobGroup);
-	 
-/*	 this.physics.add.overlap(blobGroup, blobGroup, function() {
-		console.log("collision");
-	   });
-*/	
-    var emitter = particles.createEmitter({
+	grosBlob.emitter = particles.createEmitter({
 		frame:  ['blue'],
 		quantity: 10,
         lifespan: 1000,
@@ -86,8 +52,13 @@ function create ()
 		follow : grosBlob,
 		scale: { start: 1, end: 0, ease: 'linear' }
     });
+	blobGroup.add(grosBlob);
 	
-	var emitter_b = particles.createEmitter({
+	var moyenBlob = this.physics.add.image(200,300, 'face');
+	moyenBlob.setInteractive();
+	moyenBlob.setSize(50,50, true);
+	blobGroup.add(moyenBlob);
+	moyenBlob.emitter = particles.createEmitter({
  		frame:  ['green'] ,
 		quantity: 10,
 		scale: { start: 0.5, end: 0, ease: 'linear' },
@@ -96,20 +67,46 @@ function create ()
 		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
 		follow : moyenBlob,
 		//followOffset: {x:100, y:100},
-
     });
 
-	var emitter_c = particles.createEmitter({
+	
+	var petitBlob = this.physics.add.image(200,450, 'face');
+	petitBlob.setInteractive();
+	petitBlob.setSize(50,50, true);
+	petitBlob.setScale(0.75);
+	blobGroup.add(petitBlob);
+	petitBlob.emitter = particles.createEmitter({
  		frame:  ['yellow'] ,
-		quantity: 10,
+		quantity: 20,
 		scale: { start: 0.3, end: 0, ease: 'linear' },
         lifespan: 300,
         blendMode: 'ADD',
 		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
 		follow : petitBlob,
 		//followOffset: {x:-100, y:0},
+    });	
 
+	//Les blobs subissent la physique
+	this.physics.add.collider(blobGroup, blobGroup);
+	
+	grosBlob.setVelocity(
+		Phaser.Math.Between(0,100),
+		Phaser.Math.Between(0,100),
+	)
+/*	
+	this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+        gameObject.x = dragX;
+        gameObject.y = dragY;
     });
+*/
+	
+	 
+/*	 this.physics.add.overlap(blobGroup, blobGroup, function() {
+		console.log("collision");
+	   });
+*/	
+    
+	
 
 }
 
