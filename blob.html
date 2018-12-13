@@ -13,7 +13,13 @@ var config = {
     scene: {
         preload: preload,
         create: create
-    }
+    },
+	physics: {
+        default: 'arcade',
+        arcade: {
+            debug: true
+        }
+    },
 };
 
 var game = new Phaser.Game(config);
@@ -27,14 +33,38 @@ function preload ()
 function create ()
 {
     var particles = this.add.particles('flares');
+	var blobGroup = this.physics.add.group();
 
-	var grosBlob = this.add.image(200,150, 'face');
+	var grosBlob = this.physics.add.image(200,150, 'face');
+	grosBlob.setInteractive();
+	this.input.setDraggable(grosBlob);
+	grosBlob.setSize(80,80, true);
 	grosBlob.setScale(1.5);
+	blobGroup.add(grosBlob);
 	
-	var moyenBlob = this.add.image(200,300, 'face');
+	var moyenBlob = this.physics.add.image(200,300, 'face');
+	moyenBlob.setInteractive();
+	this.input.setDraggable(moyenBlob);
+	moyenBlob.setSize(70,70, true);
+	blobGroup.add(moyenBlob);
 	
-	var petitBlob = this.add.image(200,450, 'face');
+	var petitBlob = this.physics.add.image(200,450, 'face');
+	petitBlob.setInteractive();
+	this.input.setDraggable(petitBlob);
+	petitBlob.setSize(60,60, true);
 	petitBlob.setScale(0.75);
+	blobGroup.add(petitBlob);
+
+	this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+
+        gameObject.x = dragX;
+        gameObject.y = dragY;
+
+    });
+
+	   this.physics.add.overlap(blobGroup, blobGroup, function() {
+		console.log("collision");
+	   });
 	
     var emitter = particles.createEmitter({
 		frame:  ['blue'],
@@ -66,19 +96,10 @@ function create ()
         blendMode: 'ADD',
 		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
 		follow : petitBlob,
-		//followOffset: {x:100, y:100},
+		//followOffset: {x:-100, y:0},
 
     });
 
-	var tween = this.tweens.add({
-        targets: [grosBlob, moyenBlob, petitBlob],
-        x: 600,
-        ease: 'Cubic.easeInOut',
-        duration: 3000,
-		yoyo: true
-    });
-
-	
 }
 
 
