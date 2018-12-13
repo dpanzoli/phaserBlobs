@@ -33,28 +33,36 @@ function preload ()
 function create ()
 {
     var particles = this.add.particles('flares');
-	var blobGroup = this.physics.add.group();
+	var blobGroup = this.physics.add.group({
+		bounceX: 1,
+		bounceY: 1,
+		collideWorldBounds: true
+	});
 
 	var grosBlob = this.physics.add.image(200,150, 'face');
 	grosBlob.setInteractive();
 	this.input.setDraggable(grosBlob);
-	grosBlob.setSize(80,80, true);
+	grosBlob.setSize(60,60, true);
 	grosBlob.setScale(1.5);
 	blobGroup.add(grosBlob);
+	grosBlob.setVelocity(
+		Phaser.Math.Between(0,100),
+		Phaser.Math.Between(0,100),
+	)
 	
 	var moyenBlob = this.physics.add.image(200,300, 'face');
 	moyenBlob.setInteractive();
 	this.input.setDraggable(moyenBlob);
-	moyenBlob.setSize(70,70, true);
+	moyenBlob.setSize(50,50, true);
 	blobGroup.add(moyenBlob);
 	
 	var petitBlob = this.physics.add.image(200,450, 'face');
 	petitBlob.setInteractive();
 	this.input.setDraggable(petitBlob);
-	petitBlob.setSize(60,60, true);
+	petitBlob.setSize(50,50, true);
 	petitBlob.setScale(0.75);
 	blobGroup.add(petitBlob);
-
+		
 	this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
 
         gameObject.x = dragX;
@@ -62,10 +70,13 @@ function create ()
 
     });
 
-	   this.physics.add.overlap(blobGroup, blobGroup, function() {
+	
+	 this.physics.add.collider(blobGroup, blobGroup);
+	 
+/*	 this.physics.add.overlap(blobGroup, blobGroup, function() {
 		console.log("collision");
 	   });
-	
+*/	
     var emitter = particles.createEmitter({
 		frame:  ['blue'],
 		quantity: 10,
