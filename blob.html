@@ -21,52 +21,59 @@ var game = new Phaser.Game(config);
 function preload ()
 {
     this.load.atlas('flares', 'flares.png', 'flares.json');
+	this.load.image('face','face.png');
 }
 
 function create ()
 {
     var particles = this.add.particles('flares');
 
-	//var container = this.add.container(200, 300);
-
-
-	var emitZone = new Phaser.Geom.Circle(200, 300, 25);
-	//container.add(emitZone);
+	var grosBlob = this.add.image(200,150, 'face');
+	grosBlob.setScale(1.5);
 	
-	var emitZone_b = new Phaser.Geom.Circle(600, 300, 5);
+	var moyenBlob = this.add.image(200,300, 'face');
 	
+	var petitBlob = this.add.image(200,450, 'face');
+	petitBlob.setScale(0.75);
 	
     var emitter = particles.createEmitter({
-        //angle: { min: 140, max: 180 },
 		frame:  ['blue'],
-		maxParticles: 40,
-		//frequency: ????
-        speed: 0,
-        gravityY: 0,
-        lifespan: 100,
+		quantity: 10,
+        lifespan: 1000,
         blendMode: 'ADD',
-		emitZone: {source: emitZone}
+		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
+		follow : grosBlob,
+		scale: { start: 1, end: 0, ease: 'linear' }
     });
 	
 	var emitter_b = particles.createEmitter({
-        //angle: { min: 140, max: 180 },
-		frame:  ['yellow'] ,
-		follow: emitZone,
-		followOffset: {x:100, y:100},
-		maxParticles: 40,
-		scale: 0.2,
-        speed: 0,
-        gravityY: 0,
-        lifespan: 100,
+ 		frame:  ['green'] ,
+		quantity: 10,
+		scale: { start: 0.5, end: 0, ease: 'linear' },
+        lifespan: 500,
         blendMode: 'ADD',
-		emitZone: {source: emitZone_b}
+		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
+		follow : moyenBlob,
+		//followOffset: {x:100, y:100},
+
     });
 
+	var emitter_c = particles.createEmitter({
+ 		frame:  ['yellow'] ,
+		quantity: 10,
+		scale: { start: 0.3, end: 0, ease: 'linear' },
+        lifespan: 300,
+        blendMode: 'ADD',
+		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
+		follow : petitBlob,
+		//followOffset: {x:100, y:100},
+
+    });
 
 	var tween = this.tweens.add({
-        targets: emitZone,
+        targets: [grosBlob, moyenBlob, petitBlob],
         x: 600,
-        ease: 'linear',
+        ease: 'Cubic.easeInOut',
         duration: 3000,
 		yoyo: true
     });
