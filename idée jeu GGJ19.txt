@@ -19,10 +19,9 @@ Entité évolue au fil des combats
 
 éventuellement, un truc similaire à IODA-LIFL. Capter l'environnement proche. Prendre une décision (dilemme du prisonnier) 
 
-
 Les combats pourraient être réglés par la physique. Un gros a de l'inertie et donc de la puissance.
 Les plus petits doivent arriver bien lancés pour avoir un impact.
-Les gros se défendent en chassant les petits (comme un éléphant dans la savane qui est cerné de lionnes et qui doit faire front de tous côté pour les garder à distance).
+Les gros se défendent en chassant les petits (comme un éléphant dans la savane qui est cerné de lionnes et qui doit faire front de tous côté pour les garder à distance). Quand le gros va trop vite, pour échapper au danger, il perd de l'énergie que les petits peuvent bouffer.
 Les petits attaquant en prenant de la vitesse.
 %
 Alternativement, ou en plus, chaque espèce est doté d'un coup spécial qui s'active au clic gauche pour une durée très brève. Par exemple: 

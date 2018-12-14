@@ -25,13 +25,55 @@ var config = {
 
 var game = new Phaser.Game(config);
 
+var avatar, grosBlob, directionArrow;
+
 function preload ()
 {
     this.load.atlas('flares', 'flares.png', 'flares.json');
-	this.load.image('face','face.png');
+	this.load.spritesheet('faces','faces.png', { frameWidth: 64, frameHeight: 64 });
 	
-	this.load.image('arrow','arrow.png');
+	this.load.spritesheet('arrow','arrow.png',{ frameWidth: 50, frameHeight: 80 });
 }
+
+
+var blobs = {
+	petit: {
+		body: 32,
+		scale: 0.4,
+		emitter: {
+			color: 'yellow',
+			quantity:20,
+			lifespan: 300,
+			radius: 20,
+			scale: 0.3
+		}
+	},
+	moyen: {
+		body: 32,
+		scale: 0.6,
+		emitter: {
+			color: 'green',
+			quantity:10,
+			lifespan: 500,
+			radius: 25,
+			scale: 0.5
+		}
+	},
+	gros: {
+		body: 50,
+		scale: 1,
+		emitter: {
+			color: 'blue',
+			quantity:10,
+			lifespan: 1000,
+			radius: 25,
+			scale: 1
+		}
+		
+	}
+}
+
+var blob =0; //blob en cours d'affichage
 
 function create ()
 {
@@ -41,96 +83,109 @@ function create ()
 		bounceY: 1,
 		collideWorldBounds: true
 	});
-
-	var container = this.add.container(200,150);
-	var controle = this.add.container(0,0);
-	container.add(controle);
-	var grosBlob = this.physics.add.image(0, 0, 'face');
-	grosBlob.setInteractive();
-	grosBlob.setCircle(40,-24,-24);
-	grosBlob.setScale(1.5);
-	grosBlob.emitter = particles.createEmitter({
-		frame:  ['blue'],
-		quantity: 10,
-        lifespan: 1000,
-        blendMode: 'ADD',
-		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
-		follow : container,
-		scale: { start: 1, end: 0, ease: 'linear' }
-    });
-	blobGroup.add(grosBlob);
-	container.add(grosBlob);
-	var dir = this.add.image(100,0,'arrow');
-	controle.add(dir);
-	controle.setRotation(0);
 	
-	var moyenBlob = this.physics.add.image(200,300, 'face');
-	moyenBlob.setInteractive();
-	moyenBlob.setCircle(32,-16,-16);
-	blobGroup.add(moyenBlob);
-	moyenBlob.emitter = particles.createEmitter({
- 		frame:  ['green'] ,
-		quantity: 10,
-		scale: { start: 0.5, end: 0, ease: 'linear' },
-        lifespan: 500,
+	b = Object.keys(blobs)[blob];
+
+	avatar = this.add.container(400,300);
+	this.physics.world.enable(avatar);
+	avatar.vitesse = 0;
+	avatar.direction = 0;
+	avatar.body.setCircle(blobs[b].body,-blobs[b].body,-blobs[b].body);
+	blobFace = this.add.image(0, 0, 'faces',0);
+	blobFace.setScale(blobs[b].scale);
+	blobFace.emitter = particles.createEmitter({
+		frame:  [blobs[b].emitter.color],
+		quantity: blobs[b].emitter.quantity,
+        lifespan: blobs[b].emitter.lifespan,
         blendMode: 'ADD',
-		emitZone: {source: new Phaser.Geom.Circle(0, 0, 25)},
-		follow : moyenBlob,
-		//followOffset: {x:100, y:100},
+		emitZone: {source: new Phaser.Geom.Circle(0, 0, blobs[b].emitter.radius)},
+		follow : avatar,
+		scale: { start: blobs[b].emitter.scale, end: 0, ease: 'linear' }
     });
-
-	console.log(container);
-	
-	var petitBlob = this.physics.add.image(200,450, 'face');
-	petitBlob.setInteractive();
-	petitBlob.setCircle(32,-16,-16);
-	petitBlob.setScale(0.66);
-	blobGroup.add(petitBlob);
-	petitBlob.emitter = particles.createEmitter({
- 		frame:  ['yellow'] ,
-		quantity: 20,
-		scale: { start: 0.3, end: 0, ease: 'linear' },
-        lifespan: 300,
-        blendMode: 'ADD',
-		emitZone: {source: new Phaser.Geom.Circle(0, 0, 20)},
-		follow : petitBlob,
-		//followOffset: {x:-100, y:0},
-    });	
-
-	//Les blobs subissent la physique
-	this.physics.add.collider(blobGroup, blobGroup);
+	blobGroup.add(avatar);
+	avatar.add(blobFace);
+	//ajout de la flèche de contrôle
+	var controlArrow = this.add.container(0,0);
+	controlArrow.visible = false; //par défaut
+	directionArrow = this.add.image(100,0,'arrow');
+	controlArrow.add(directionArrow);
+	avatar.add(controlArrow);
 	
 	this.input.on('pointermove', function (pointer) {
 		
-		var angle = Phaser.Math.Angle.Between(
-			container.x,
-			container.y,
+		avatar.direction = Phaser.Math.Angle.Between(
+			avatar.x,
+			avatar.y,
 			pointer.worldX,
 			pointer.worldY
 		);
-		controle.setRotation(angle);
+		controlArrow.setRotation(avatar.direction);
 		
 		var distance = Phaser.Math.Distance.Between(
-			container.x,
-			container.y,
+			avatar.x,
+			avatar.y,
 			pointer.worldX,
 			pointer.worldY
 		);
 		if (distance<80) {
-			dir.visible = false;
+			controlArrow.visible = false;
+			avatar.vitesse = 0;
 		} else {
-			dir.visible = true;
-			var norm = (Math.min(distance,300) - 80)/300.0
+			controlArrow.visible = true;
+			var norm = (Math.min(distance,300) - 80)/300
 			//modifier la taille de la flèche
-			dir.setScale(norm + 0.5);
+			directionArrow.setScale(norm*0.75+0.25);
 			//modifier la distance de la flèche
-			dir.x = 80 + (norm*50);
+			directionArrow.x = 80 + (norm*50);
+			avatar.vitesse = norm;
 		}
-		
 	});
+	
+	//creation du triangle pour la direction
+/*	particles.createEmitter({
+		frame:  ['blue'],
+		quantity: 100,
+        lifespan: 1000,
+        blendMode: 'ADD',
+		emitZone: {source: new Phaser.Geom.Triangle(400, 300, 600,500,400,700)},
+		scale: { start: 1, end: 0, ease: 'linear' }
+    });
+*/
+	
+	this.input.keyboard.on('keydown_SPACE', function (event) {
+		event.stopPropagation();
+		blob = (blob + 1) % Object.keys(blobs).length;
+		this.scene.restart();
+    }, this);
 }
 
-function update() {}
+function update(elapsed, delta) {
+	
+	if (this.input.activePointer.isDown && avatar.vitesse > 0.5) {
+		blobFace.setFrame(2);
+		directionArrow.setFrame(1);
+		this.physics.velocityFromRotation(
+			avatar.direction, 
+			avatar.vitesse*delta*50,
+			avatar.body.velocity
+		);
+	} else {
+		if (avatar.vitesse > 0.3) {
+			//move fast
+			blobFace.setFrame(1);
+		} else {
+			//move slowly
+			blobFace.setFrame(0);
+		}
+		this.physics.velocityFromRotation(
+			avatar.direction, 
+			avatar.vitesse*delta*25,
+			avatar.body.velocity
+		);
+	}
+	
+	
+}
 
 
 </script>
