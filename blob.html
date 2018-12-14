@@ -1,15 +1,29 @@
 
 <html>
 <meta charset="utf-8">
+<body>
+	<div id="jeu" style="width:800px; height:600px;border: 1px solid red"></div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="phaser.min.js"></script>
 <script>
+	$('#jeu').bind('mouseleave', function() {
+		isPlaying = false;
+	});
+	$('#jeu').bind('mouseenter', function() {
+		isPlaying = true;
+	});
+</script>
+<script>
+
+var isPlaying = true;
 
 var config = {
-    type: Phaser.WEBGL,
+    type: Phaser.CANVAS,
     width: 800,
-    height: 800,
+    height: 600,
     backgroundColor: '#000',
-    parent: 'phaser-example',
+    parent: 'jeu',
     scene: {
         preload: preload,
         create: create,
@@ -21,6 +35,7 @@ var config = {
             debug: false
         }
     },
+	fps: 30
 };
 
 var game = new Phaser.Game(config);
@@ -117,12 +132,12 @@ function create ()
 	blobGroup.add(avatar);
 	avatar.add(blobFace);
 	//ajout de la flèche de contrôle
-	var controlArrow = this.add.container(0,0);
-	controlArrow.visible = false; //par défaut
+	avatar.controlArrow = this.add.container(0,0);
+	avatar.controlArrow.visible = false; //par défaut
 	directionArrow = this.add.image(0,0,'arrow');
 	directionArrow.setFrame(blobs[b].arrow.frame.normal);
-	controlArrow.add(directionArrow);
-	avatar.add(controlArrow);
+	avatar.controlArrow.add(directionArrow);
+	avatar.add(avatar.controlArrow);
 	
 	this.input.on('pointermove', function (pointer) {
 		
@@ -132,7 +147,7 @@ function create ()
 			pointer.worldX,
 			pointer.worldY
 		);
-		controlArrow.setRotation(avatar.direction);
+		avatar.controlArrow.setRotation(avatar.direction);
 		
 		var distance = Phaser.Math.Distance.Between(
 			avatar.x,
@@ -142,10 +157,10 @@ function create ()
 		);
 		var db = blobs[b].arrow.distance
 		if (distance<db) {
-			controlArrow.visible = false;
+			avatar.controlArrow.visible = false;
 			avatar.vitesse = 0;
 		} else {
-			controlArrow.visible = true;
+			avatar.controlArrow.visible = true;
 			var norm = (Math.min(distance,db*4) - db)/(db*4)
 			//modifier la taille de la flèche
 			directionArrow.setScale(norm*0.75+0.25);
@@ -163,6 +178,11 @@ function create ()
 }
 
 function update(elapsed, delta) {
+	
+	if (!isPlaying) {
+		avatar.controlArrow.visible = false;
+		avatar.vitesse = 0;
+	}
 	
 	if (this.input.activePointer.isDown && avatar.vitesse > 0.5) {
 		directionArrow.setTint(0xff0000);
