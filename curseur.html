@@ -1,0 +1,77 @@
+
+<html>
+<meta charset="utf-8">
+<script src="phaser.min.js"></script>
+<script>
+
+var config = {
+    type: Phaser.WEBGL,
+    width: 800,
+    height: 800,
+    backgroundColor: '#000',
+    parent: 'phaser-example',
+    scene: {
+        preload: preload,
+        create: create
+    },
+};
+
+var game = new Phaser.Game(config);
+
+function preload ()
+{
+    this.load.atlas('flares', 'flares.png', 'flares.json');
+}
+
+function create ()
+{
+	var particles = this.add.particles('flares');	
+	
+	//creation du triangle pour la direction
+	particles.createEmitter({
+		frame:  ['blue'],
+		quantity: 100,
+        lifespan: 1000,
+        blendMode: 'ADD',
+		emitZone: {source: new Phaser.Geom.Triangle(
+			100, 200,
+			200,300,
+			100,400)
+		},
+		scale: { start: 0.7, end: 0, ease: 'linear' }
+    });
+	
+	particles.createEmitter({
+		frame:  ['green'],
+		quantity: 100,
+        lifespan: 1000,
+        blendMode: 'ADD',
+		emitZone: {source: new Phaser.Geom.Triangle(
+			300, 225,
+			375, 300,
+			300, 375)
+		},
+		scale: { start: 0.5, end: 0, ease: 'linear' }
+    });
+	
+	particles.createEmitter({
+		frame:  ['yellow'],
+		quantity: 100,
+        lifespan: 1000,
+        blendMode: 'ADD',
+		emitZone: {source: new Phaser.Geom.Triangle(
+			500, 250,
+			550, 300,
+			500, 350)
+		},
+		scale: { start: 0.3, end: 0, ease: 'linear' }
+    });
+
+	
+}
+
+
+
+</script>
+
+</html>
