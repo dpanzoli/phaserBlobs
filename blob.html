@@ -2,7 +2,15 @@
 <html>
 <meta charset="utf-8">
 <script src="phaser.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
+
+var socket = io();
+
+socket.on('update', function(msg) {
+	console.log();
+});
 
 var config = {
     type: Phaser.WEBGL,
@@ -25,7 +33,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-var avatar, grosBlob, directionArrow;
+var avatar, directionArrow;
 
 function preload ()
 {
@@ -160,6 +168,7 @@ function create ()
 		blob = (blob + 1) % Object.keys(blobs).length;
 		this.scene.restart();
     }, this);
+
 }
 
 function update(elapsed, delta) {
@@ -187,6 +196,9 @@ function update(elapsed, delta) {
 			avatar.body.velocity
 		);
 	}
+	socket.emit('blobmove', {
+		position: avatar.position
+	});
 	
 	
 }
